@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ätherische Öle – Suche nach Anwendung &amp; Eigenschaften</title>
+  <meta
+    name="description"
+    content="Suche nach Öl-Namen oder Anwendungsbereich: durchsuchbares Nachschlagewerk zu ätherischen Ölen mit Artikel- und Kategorieseiten."
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="page-header">
+      <h1>🌿 Ätherische Öle</h1>
+      <p>
+        Suche nach einem Öl (z.&nbsp;B. „Lavendelöl“) oder einem Anwendungsbereich
+        (z.&nbsp;B. „Erkältung“ oder „Haushalt“) – wie in einem kleinen Nachschlagewerk.
+      </p>
+    </header>
+
+    <div class="search-box">
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Öl oder Anwendung suchen … z. B. „Lavendel“, „Erkältung“, „Haushalt“"
+        autocomplete="off"
+      />
+      <button id="clear-btn" class="clear-btn" type="button" aria-label="Suche löschen">✕</button>
+    </div>
+    <p class="search-hint">
+      Tipp: Bei eindeutigem Treffer springt <kbd>Enter</kbd> direkt zur Öl- oder
+      Kategorieseite.
+    </p>
+
+    <section id="search-results" class="search-results" hidden>
+      <div id="results-oele" class="results-group">
+        <h2>Öle</h2>
+        <div class="results grid" id="results-oele-grid"></div>
+      </div>
+      <div id="results-tags" class="results-group">
+        <h2>Anwendungsbereiche &amp; Eigenschaften</h2>
+        <div class="chip-row link-chip-row" id="results-tags-row"></div>
+      </div>
+      <p id="results-empty" class="empty-state" hidden>
+        Keine Treffer. Versuche einen anderen Begriff, z. B. einen Ölnamen oder
+        ein Stichwort wie „Schlaf“ oder „Reinigung“.
+      </p>
+    </section>
+
+    <section id="browse" class="browse">
+      <div class="browse-section">
+        <h2>Nach Anwendungsbereich stöbern</h2>
+        <div id="anwendung-chips" class="chip-row link-chip-row"></div>
+      </div>
+      <div class="browse-section">
+        <h2>Nach Eigenschaft stöbern</h2>
+        <div id="eigenschaften-chips" class="chip-row link-chip-row"></div>
+      </div>
+      <div class="browse-section">
+        <h2>Alle Öle von A–Z <span id="az-count" class="muted"></span></h2>
+        <ul id="az-list" class="az-list"></ul>
+      </div>
+    </section>
+
+    <footer class="disclaimer">
+      Diese Seite beschreibt traditionelle/volkskundliche und haushaltspraktische
+      Nutzung ätherischer Öle und ersetzt keine medizinische oder homöopathische
+      Fachberatung. Bei Schwangerschaft, Vorerkrankungen, für Kinder oder
+      Haustiere vor Anwendung ärztlichen bzw. fachkundigen Rat einholen.
+    </footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script src="search.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title id="page-title">Kategorie – Ätherische Öle</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <nav class="breadcrumb"><a href="index.html">← Zur Suche</a></nav>
+
+    <div id="not-found" class="empty-state" hidden>
+      <p>Diese Kategorie wurde nicht gefunden.</p>
+      <p><a href="index.html">Zurück zur Suche</a></p>
+    </div>
+
+    <div id="category" hidden>
+      <header class="article-header">
+        <h1 id="tag-name"></h1>
+        <p class="botanisch" id="tag-typ-label"></p>
+      </header>
+
+      <p id="tag-count" class="muted"></p>
+
+      <div id="safety-note" class="safety-note" hidden>
+        <strong id="safety-note-title"></strong>
+        <p id="safety-note-text"></p>
+      </div>
+
+      <div class="results grid" id="tag-oils-grid"></div>
+    </div>
+
+    <footer class="disclaimer">
+      Diese Seite beschreibt traditionelle/volkskundliche und haushaltspraktische
+      Nutzung ätherischer Öle und ersetzt keine medizinische oder homöopathische
+      Fachberatung. Bei Schwangerschaft, Vorerkrankungen, für Kinder oder
+      Haustiere vor Anwendung ärztlichen bzw. fachkundigen Rat einholen.
+    </footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script src="anwendung.js"></script>
+</body>
+</html>

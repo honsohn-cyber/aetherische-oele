@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title id="page-title">Öl-Artikel – Ätherische Öle</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <nav class="breadcrumb"><a href="index.html">← Zur Suche</a></nav>
+
+    <div id="not-found" class="empty-state" hidden>
+      <p>Dieses Öl wurde nicht gefunden.</p>
+      <p><a href="index.html">Zurück zur Suche</a></p>
+    </div>
+
+    <article id="article" class="article" hidden>
+      <div class="hero" id="oil-hero" aria-hidden="true"></div>
+
+      <header class="article-header">
+        <h1 id="oil-name"></h1>
+        <p class="botanisch" id="oil-botanisch"></p>
+      </header>
+
+      <div class="article-layout">
+        <aside class="infobox">
+          <h2>Steckbrief</h2>
+          <dl>
+            <dt>Botanischer Name</dt>
+            <dd id="info-botanisch"></dd>
+            <dt>Pflanzenfamilie</dt>
+            <dd id="info-familie"></dd>
+            <dt>Eigenschaften</dt>
+            <dd><div class="chip-row link-chip-row" id="info-eigenschaften"></div></dd>
+            <dt>Anwendungsbereiche</dt>
+            <dd><div class="chip-row link-chip-row" id="info-anwendung"></div></dd>
+          </dl>
+        </aside>
+
+        <div class="article-body">
+          <section>
+            <h2>Beschreibung</h2>
+            <p id="oil-beschreibung"></p>
+          </section>
+
+          <section>
+            <h2>Hinweise</h2>
+            <div class="hinweis" id="oil-hinweise"></div>
+            <div id="safety-notes"></div>
+          </section>
+
+          <section id="related-section">
+            <h2>Ähnliche Öle</h2>
+            <div class="results grid" id="related-grid"></div>
+          </section>
+        </div>
+      </div>
+    </article>
+
+    <footer class="disclaimer">
+      Diese Seite beschreibt traditionelle/volkskundliche und haushaltspraktische
+      Nutzung ätherischer Öle und ersetzt keine medizinische oder homöopathische
+      Fachberatung. Bei Schwangerschaft, Vorerkrankungen, für Kinder oder
+      Haustiere vor Anwendung ärztlichen bzw. fachkundigen Rat einholen.
+    </footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script src="hero.js"></script>
+  <script src="oel.js"></script>
+</body>
+</html>
