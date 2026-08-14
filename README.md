@@ -106,6 +106,24 @@ neue Kategorien/Filter – es muss nichts weiter angepasst werden. Die
 Artikel- und Kategorieseiten (URL-Slugs) werden automatisch aus dem Namen
 erzeugt (`slugify()` in `common.js`).
 
+## PDF: Archetypische Eigenschaften der Young-Living-Öle
+
+`dokumente/Archetypische-Eigenschaften-Young-Living-Oele.pdf` ordnet die
+zwölf klassischen (Jung'schen) Archetypen (Held, Weise, Liebende(r) …) je
+einem ätherischen Öl bzw. einer emotionalen Ölmischung von Young Living
+zu (z. B. Valor® dem Helden, Joy® dem Narr). Es handelt sich um ein
+spirituell-psychologisches Deutungsmodell aus der energetischen
+Aromatherapie-Praxis – **keine** medizinische oder wissenschaftlich
+belegte Aussage und **keine** offizielle Klassifikation von Young Living
+(entsprechender Hinweis ist im Dokument enthalten).
+
+Erzeugt wird das PDF mit `scripts/generate_archetypen_pdf.py`
+(Abhängigkeiten: `pip install -r scripts/requirements.txt`):
+
+```bash
+python3 scripts/generate_archetypen_pdf.py
+```
+
 ## Hinweis
 
 Die Inhalte beschreiben traditionelle/volkskundliche und
