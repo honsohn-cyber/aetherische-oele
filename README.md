@@ -124,6 +124,25 @@ Erzeugt wird das PDF mit `scripts/generate_archetypen_pdf.py`
 python3 scripts/generate_archetypen_pdf.py
 ```
 
+## PDF: Wesenheiten der ätherischen Öle
+
+`dokumente/Wesenheiten-der-aetherischen-Oele.pdf` beschreibt für alle 47
+Öle dieses Wikis eine kurze, poetische „Wesenheit" (z. B. „Lavendel – Die
+Friedensstifterin", „Gewürznelke – Der feurige Krieger"), gruppiert nach
+Pflanzenfamilie und farblich an das `FAMILY_THEME` aus `hero.js`
+angelehnt. Auch hier gilt: ein poetisch-spirituelles Deutungsbild aus der
+energetischen Aromatherapie-Praxis – **keine** medizinische oder
+botanische Tatsachenbehauptung (Hinweis im Dokument enthalten). Die
+faktischen Angaben (botanischer Name, Familie, Eigenschaften,
+Beschreibung) stammen unverändert aus `data.js`.
+
+Erzeugt mit `scripts/generate_wesenheiten_pdf.py` (gleiche Abhängigkeiten
+wie oben):
+
+```bash
+python3 scripts/generate_wesenheiten_pdf.py
+```
+
 ## Hinweis
 
 Die Inhalte beschreiben traditionelle/volkskundliche und
