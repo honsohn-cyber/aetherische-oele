@@ -1,0 +1,52 @@
+# Beispiel-Konfiguration für den Trading-Bot.
+# Kopieren nach `config.yaml` und anpassen:
+#   cp config.example.yaml config.yaml
+#
+# `config.yaml` ist in .gitignore und wird NICHT eingecheckt (kann eigene
+# Zugangsdaten/Watchlist enthalten).
+
+# Watchlist: Ticker-Symbole im yfinance-Format (z. B. ".DE" für Xetra,
+# ".AS" für Amsterdam, ohne Suffix für US-Börsen).
+watchlist:
+  - AAPL
+  - MSFT
+  - SAP.DE
+  - ASML.AS
+
+analysis:
+  lookback_days: 250        # wie viele Handelstage an Kursdaten geladen werden
+  weights:                  # müssen sich zu 1.0 aufsummieren (werden sonst normiert)
+    trend: 0.35
+    momentum: 0.25
+    volatility: 0.15
+    fundamentals: 0.25
+  buy_score_threshold: 0.5    # Gesamt-Score ab dem ein Kaufsignal entsteht
+  sell_score_threshold: -0.35 # Gesamt-Score ab dem ein Verkaufssignal entsteht
+  min_confidence: 0.5         # Mindest-Konfidenz für ein Kaufsignal
+
+risk:
+  starting_cash: 10000.0      # Startkapital des kostenlosen Test-Portfolios
+  fee_per_trade: 1.0          # simulierte Gebühr pro Trade (in EUR/USD)
+  max_position_pct: 0.10      # max. Anteil des Depotwerts pro Einzelposition
+  max_open_positions: 8
+  stop_loss_pct: 0.08         # Notverkauf bei -8 % zum Einstand
+  take_profit_pct: 0.20       # Gewinnmitnahme bei +20 % zum Einstand
+  max_daily_loss_pct: 0.03    # Bot pausiert Neu-Käufe, wenn Tagesverlust erreicht
+
+broker:
+  # "paper"  -> nur simuliertes Test-Portfolio (Standard, empfohlen, kein Risiko)
+  mode: paper
+
+  # Optionale READ-ONLY-Anbindung an ein echtes Trade-Republic-Depot über
+  # das inoffizielle Community-Projekt `pytr` (https://github.com/pytr-org/pytr).
+  # Es werden NUR Kontostand/Positionen abgeglichen, NIEMALS echte Orders
+  # ausgeführt (siehe README, Abschnitt "Trade Republic Anbindung").
+  trade_republic:
+    enabled: false
+    # Kommando, mit dem `pytr` den Depot-Export erzeugt. {output} wird durch
+    # den Zielpfad ersetzt. Anpassen, falls sich die pytr-CLI ändert.
+    export_command: "pytr export_transactions {output}"
+
+state:
+  data_dir: "data"     # Ablageort für Portfolio-Zustand (JSON)
+  log_dir: "logs"      # Ablageort für Logs & Entscheidungs-Protokoll (JSONL)
