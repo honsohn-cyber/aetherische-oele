@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gitarren-Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">🎸</span>
+      <div><h1>Gitarren-Studio</h1><p>Kabel einstecken, Kopfhörer auf, los.</p></div>
+    </div>
+    <div class="io">
+      <button id="btnStart" class="primary">▶ Audio starten</button>
+      <label>Eingang <select id="selIn" disabled><option>–</option></select></label>
+      <label id="outWrap" hidden>Ausgang <select id="selOut"></select></label>
+      <div class="meter" title="Eingangspegel"><div id="meterBar"></div><div id="clipDot" title="Übersteuert – Eingangspegel senken"></div></div>
+      <span id="status" class="status">Nicht gestartet</span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="amp" role="tab">🔊 Verstärker</button>
+    <button class="tab" data-tab="tuner" role="tab">🎯 Stimmgerät</button>
+    <button class="tab" data-tab="lessons" role="tab">🎶 Lektionen</button>
+  </nav>
+
+  <main>
+    <!-- VERSTÄRKER -->
+    <section id="tab-amp" class="panel">
+      <h2>Sounds</h2>
+      <div id="presetGrid" class="preset-grid"></div>
+
+      <div class="amp">
+        <div class="amp-row">
+          <span class="lbl">Kanal</span>
+          <div id="channelSeg" class="seg"></div>
+          <label class="check"><input type="checkbox" id="chkCab" checked> Boxen-Simulation</label>
+          <button id="btnSavePreset" class="ghost">💾 Als eigenes Preset speichern</button>
+        </div>
+        <div id="knobs" class="knobs"></div>
+      </div>
+      <p class="hint">
+        <b>Tipps:</b> Nutze Kopfhörer (sonst gibt es Rückkopplung). Wenn die Anzeige oben rot blinkt, drehe
+        <i>Eingang</i> herunter. Ist der Sound zu leise oder die Lektion erkennt nichts, drehe <i>Eingang</i> hoch.
+        <i>Gate</i> schneidet Brummen zwischen den Noten ab (bei hohem Gain nützlich).
+      </p>
+    </section>
+
+    <!-- STIMMGERÄT -->
+    <section id="tab-tuner" class="panel" hidden>
+      <div class="tuner">
+        <div class="tuner-note"><span id="tNote">–</span><sup id="tOct"></sup></div>
+        <div class="gauge">
+          <div class="gauge-zone"></div>
+          <div class="gauge-mid"></div>
+          <div id="needle"></div>
+          <span class="gl">♭</span><span class="gr">♯</span>
+        </div>
+        <div id="tCents" class="tcents">–</div>
+        <div id="tHint" class="thint">Spiele eine leere Saite an.</div>
+        <div id="tStrings" class="strings"></div>
+        <div class="tuner-opts">
+          <label>Stimmung <select id="selTuning"></select></label>
+          <label>Kammerton A4 <input id="inpRef" type="number" min="415" max="466" value="440"> Hz</label>
+          <label class="check"><input type="checkbox" id="chkMuteTuner" checked> Verstärker beim Stimmen stummschalten</label>
+        </div>
+        <p class="hint">Klicke auf eine Saite, um den Referenzton zu hören.</p>
+      </div>
+    </section>
+
+    <!-- LEKTIONEN -->
+    <section id="tab-lessons" class="panel" hidden>
+      <div class="lessons-layout">
+        <aside class="side">
+          <h2>Lektionen</h2>
+          <div id="lessonList" class="lesson-list"></div>
+          <details class="import">
+            <summary>➕ Eigene Tabulatur einfügen</summary>
+            <p class="hint small">Füge eine ASCII-Tabulatur ein (hohes <b>e</b> oben, 6 Zeilen pro System). Dein Song wird dann wie eine Lektion abgespielt.</p>
+            <input id="impTitle" placeholder="Titel, z. B. Mein Riff">
+            <div class="row">
+              <label>Tempo <input id="impBpm" type="number" min="40" max="220" value="90"></label>
+              <label>Schritte/Schlag
+                <select id="impSteps"><option value="1">1</option><option value="2" selected>2 (Achtel)</option><option value="4">4 (Sechzehntel)</option></select>
+              </label>
+            </div>
+            <textarea id="impTab" rows="9" spellcheck="false" placeholder="e|-----------------|&#10;B|-----------------|&#10;G|-----------------|&#10;D|-----2-----------|&#10;A|--0-----3--------|&#10;E|-3---------------|"></textarea>
+            <button id="impAdd" class="primary small">Hinzufügen</button>
+            <span id="impMsg" class="hint small"></span>
+          </details>
+          <p class="hint small">Die mitgelieferten Riffs sind selbst geschrieben („im Stil von …“). Echte Song-Tabs sind urheberrechtlich geschützt – bring deine eigenen mit.</p>
+        </aside>
+
+        <div class="stage">
+          <div class="lesson-head">
+            <div>
+              <h2 id="lTitle">Lektion wählen</h2>
+              <p id="lMeta" class="meta"></p>
+            </div>
+            <button id="btnLoadSound" class="ghost" hidden>🎚 Passenden Sound laden</button>
+          </div>
+          <p id="lDesc" class="desc"></p>
+          <ul id="lTips" class="tips"></ul>
+
+          <div class="hud">
+            <div class="hud-item"><span class="k">Gespielt</span><span id="hudNote" class="v">–</span></div>
+            <div class="hud-item"><span class="k">Treffer</span><span id="hudScore" class="v">0 %</span></div>
+            <div class="hud-item"><span class="k">Serie</span><span id="hudStreak" class="v">0</span></div>
+            <div class="hud-item prog"><div id="hudProg"></div></div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="cv"></canvas>
+            <div id="overlay" class="overlay" hidden></div>
+          </div>
+
+          <div class="controls">
+            <button id="btnPlay" class="primary" disabled>▶ Start</button>
+            <button id="btnStop" class="ghost" disabled>■ Stopp</button>
+            <label class="speed">Tempo <input id="rngSpeed" type="range" min="40" max="120" value="100" step="5"> <span id="spdVal">100 %</span></label>
+            <label class="check"><input type="checkbox" id="chkWait"> Wartemodus</label>
+            <label class="check"><input type="checkbox" id="chkMetro" checked> Metronom</label>
+            <label class="check"><input type="checkbox" id="chkLoop"> Wiederholen</label>
+          </div>
+          <p class="hint small">Leertaste = Start/Stopp. Nach dem Start zählt das Metronom 4 Schläge ein. Im <b>Wartemodus</b> hält die Anzeige an, bis du die Note triffst – ideal zum Üben.
+            Zahlen = Bundnummer, Farbe = Saite (rot = tiefes E, violett = hohes e).</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="js/pitch.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/lessons.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
