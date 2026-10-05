@@ -119,7 +119,7 @@ class AmpEngine {
   constructor() {
     this.ctx = null;
     this.stream = null;
-    this.params = { ...AMP_PRESETS[2].p, gate: 2, inputLevel: 5, cab: true };
+    this.params = { ...AMP_PRESETS[2].p, gate: 0, inputLevel: 5, cab: true };
     this.muted = false;
     this.ready = false;
   }
@@ -132,6 +132,7 @@ class AmpEngine {
     if (!this.ctx) {
       const ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
       this.ctx = ctx;
+      ctx.onstatechange = () => this.onCtxState && this.onCtxState(ctx.state);
       try {
         await this._buildGraph();
       } catch (e) {
@@ -264,6 +265,12 @@ class AmpEngine {
     this.source = this.ctx.createMediaStreamSource(this.stream);
     this.source.connect(this.inGain);
     const t = this.stream.getAudioTracks()[0];
+    if (t) {
+      // Gerät abgezogen / vom System stummgeschaltet -> App informieren
+      t.addEventListener('ended', () => this.onInputState && this.onInputState('ended'));
+      t.addEventListener('mute', () => this.onInputState && this.onInputState('mute'));
+      t.addEventListener('unmute', () => this.onInputState && this.onInputState('unmute'));
+    }
     this.currentDeviceId = t && t.getSettings().deviceId;
     this.currentLabel = t ? t.label : '';
   }

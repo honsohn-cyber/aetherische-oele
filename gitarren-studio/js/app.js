@@ -106,6 +106,33 @@ async function refreshDevices(autopick) {
 }
 
 $('#btnStart').addEventListener('click', startAudio);
+
+// Wenn der Eingang verschwindet oder das Audio angehalten wird, soll man das sehen und es soll sich selbst erholen
+let reconnecting = false;
+engine.onInputState = async (s) => {
+  if (s === 'mute') { setStatus('⚠ Eingang vom System stummgeschaltet (anderes Programm? Datenschutz-Schalter?)', 'err'); return; }
+  if (s === 'unmute') { updateStatus(); return; }
+  if (s !== 'ended' || reconnecting) return;
+  reconnecting = true;
+  setStatus('⚠ Eingang getrennt – Kabel prüfen, ich verbinde neu …', 'err');
+  for (let i = 0; i < 60 && reconnecting; i++) {
+    try {
+      await engine.selectInput(engine.currentDeviceId);
+      await refreshDevices(false);
+      updateStatus();
+      break;
+    } catch (e) { await new Promise((r) => setTimeout(r, 2000)); }
+  }
+  reconnecting = false;
+};
+engine.onCtxState = (st) => {
+  if (st === 'running') { updateStatus(); return; }
+  setStatus('⚠ Audio angehalten – klicke irgendwo auf die Seite, um fortzufahren', 'err');
+  engine.ctx.resume().catch(() => {});
+};
+document.addEventListener('pointerdown', () => {
+  if (engine.ctx && engine.ctx.state !== 'running') engine.ctx.resume().catch(() => {});
+});
 $('#selIn').addEventListener('change', async (e) => {
   try {
     await engine.selectInput(e.target.value);
@@ -298,6 +325,16 @@ function tick() {
   meterLevel = Math.max(clamp((db + 60) / 60, 0, 1), meterLevel * 0.85);
   $('#meterBar').style.width = (meterLevel * 100).toFixed(0) + '%';
   $('#clipDot').classList.toggle('on', peak > 0.98);
+
+  // Hinweis, wenn lange gar nichts ankommt
+  if (peak > 0.0008) state.lastSignal = now;
+  else if (state.lastSignal == null) state.lastSignal = now;
+  const quiet = now - state.lastSignal > 10000;
+  if (quiet !== state.quietShown && /^(Eingang:|Kein Signal)/.test($('#status').textContent)) {
+    state.quietShown = quiet;
+    if (quiet) setStatus('Kein Signal am Eingang – spiele eine Saite an. Kommt nichts an: Eingang-Menü prüfen oder „Eingang“-Regler hochdrehen.');
+    else updateStatus();
+  }
 
   // Anschlag erkennen (plötzlicher Pegelanstieg)
   const h = state.rmsHist;
@@ -800,7 +837,9 @@ $('#impAdd').addEventListener('click', () => {
 
 // ---------------------------------------------------------------- Start
 (function init() {
-  Object.assign(engine.params, store.get('params', {}));
+  const savedParams = store.get('params', {});
+  if (savedParams.v !== 2) { savedParams.gate = 0; savedParams.v = 2; } // altes Standard-Gate (2) schnitt leise Signale ab
+  Object.assign(engine.params, savedParams);
   if (!CHANNELS[engine.params.channel]) engine.params.channel = 'crunch';
   buildKnobs();
   renderPresets();
