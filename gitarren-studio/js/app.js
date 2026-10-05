@@ -46,6 +46,7 @@ function startAudio() {
         if (saved) await engine.start(); else throw e;
       }
       await refreshDevices(true);
+      await Studio.attach();
       $('#btnStart').textContent = '● Audio läuft';
       $('#btnStart').disabled = true;
       updateStatus();
@@ -123,6 +124,7 @@ function setTab(name) {
   document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('main > .panel').forEach((p) => { p.hidden = p.id !== 'tab-' + name; });
   if (name !== 'lessons' && Game.run === 'playing') Game.stop();
+  if ((name === 'tuner' || name === 'lessons') && Studio.playing) Studio.stop();
   engine.setMuted(name === 'tuner' && $('#chkMuteTuner').checked);
 }
 document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
@@ -804,9 +806,10 @@ $('#impAdd').addEventListener('click', () => {
   renderPresets();
   syncControls();
   Tuner.init();
+  Studio.init();
   Game.init();
   buildLessons();
   selectLesson(LESSONS[0].id);
   setStatus('Nicht gestartet – klicke auf „Audio starten“');
-  window.__gs = { engine, Game, Tuner, state, lessons: () => lessons };
+  window.__gs = { engine, Game, Tuner, Studio, state, lessons: () => lessons };
 })();

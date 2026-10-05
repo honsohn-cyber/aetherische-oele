@@ -31,6 +31,34 @@ class Gate extends AudioWorkletProcessor {
 registerProcessor('gate', Gate);
 `;
 
+
+// Synthetischer Hall (Rauschen mit abklingender Hüllkurve) – auch für das Studio
+function makeImpulse(ctx, seconds, decay) {
+  const len = Math.floor(ctx.sampleRate * seconds);
+  const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c);
+    let lp = 0;
+    for (let i = 0; i < len; i++) {
+      const t = i / len;
+      const noise = Math.random() * 2 - 1;
+      lp += (noise - lp) * (0.55 - 0.4 * t); // Höhen klingen schneller ab
+      d[i] = lp * Math.pow(1 - t, decay);
+    }
+  }
+  return buf;
+}
+
+// Weicher Begrenzer: nie hartes digitales Clipping
+function makeSoftClipCurve() {
+  const sc = new Float32Array(1025);
+  for (let i = 0; i < sc.length; i++) {
+    const x = (i / 1024) * 2 - 1, ax = Math.abs(x);
+    sc[i] = Math.sign(x) * (ax < 0.7 ? ax : 0.7 + 0.3 * Math.tanh((ax - 0.7) / 0.3));
+  }
+  return sc;
+}
+
 // Kennlinien für die Verzerrung
 function makeCurve(kind) {
   const n = 2048;
@@ -188,12 +216,7 @@ class AmpEngine {
     Object.assign(this.limiter.release, { value: 0.15 });
     // weicher Begrenzer am Ende: nie hartes digitales Clipping auf den Kopfhörern
     this.softClip = Object.assign(ctx.createWaveShaper(), { oversample: '2x' });
-    const sc = new Float32Array(1025);
-    for (let i = 0; i < sc.length; i++) {
-      const x = (i / 1024) * 2 - 1, ax = Math.abs(x);
-      sc[i] = Math.sign(x) * (ax < 0.7 ? ax : 0.7 + 0.3 * Math.tanh((ax - 0.7) / 0.3));
-    }
-    this.softClip.curve = sc;
+    this.softClip.curve = makeSoftClipCurve();
     this.outMeter = ctx.createAnalyser();
     this.outMeter.fftSize = 1024;
 
@@ -226,20 +249,7 @@ class AmpEngine {
   }
 
   _makeImpulse(seconds, decay) {
-    const ctx = this.ctx;
-    const len = Math.floor(ctx.sampleRate * seconds);
-    const buf = ctx.createBuffer(2, len, ctx.sampleRate);
-    for (let c = 0; c < 2; c++) {
-      const d = buf.getChannelData(c);
-      let lp = 0;
-      for (let i = 0; i < len; i++) {
-        const t = i / len;
-        const noise = Math.random() * 2 - 1;
-        lp += (noise - lp) * (0.55 - 0.4 * t); // Höhen klingen schneller ab
-        d[i] = lp * Math.pow(1 - t, decay);
-      }
-    }
-    return buf;
+    return makeImpulse(this.ctx, seconds, decay);
   }
 
   async selectInput(deviceId) {

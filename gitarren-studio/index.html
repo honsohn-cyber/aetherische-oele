@@ -26,6 +26,7 @@
     <button class="tab active" data-tab="amp" role="tab">🔊 Verstärker</button>
     <button class="tab" data-tab="tuner" role="tab">🎯 Stimmgerät</button>
     <button class="tab" data-tab="lessons" role="tab">🎶 Lektionen</button>
+    <button class="tab" data-tab="studio" role="tab">🎛️ Studio</button>
   </nav>
 
   <main>
@@ -131,12 +132,52 @@
         </div>
       </div>
     </section>
+
+    <!-- STUDIO -->
+    <section id="tab-studio" class="panel" hidden>
+      <div class="studio-bar">
+        <div class="transport">
+          <button id="stuPlay" class="primary">▶ Play</button>
+          <button id="stuStop" class="ghost" disabled>■ Stopp</button>
+          <button id="stuRec" class="rec" title="Deine Gitarre zur Band aufnehmen (ein Durchlauf der Akkordfolge)">● Aufnehmen</button>
+          <label>Tempo <input id="stuBpm" type="number" min="50" max="220" value="100"> BPM</label>
+          <label class="check"><input type="checkbox" id="stuMetro"> Metronom</label>
+          <span id="stuPos" class="pos">Gestoppt</span>
+        </div>
+        <div class="prog">
+          <label>Akkordfolge <select id="stuPreset"></select></label>
+          <input id="stuChords" type="text" spellcheck="false" placeholder="z. B. E7*4 A7*2 E7*2 B7 A7 E7*2" aria-label="Akkorde">
+        </div>
+        <div id="stuChips" class="chips"></div>
+        <p class="hint small">Ein Akkord = ein Takt, <b>*4</b> = vier Takte (z. B. <code>Am G*2 F/C D5 Em7 Bsus4</code>). Zahlen für 7er, <b>m</b> Moll, <b>5</b> Power Chord, <b>/C</b> Basston.</p>
+        <p id="stuMsg" class="hint small"></p>
+      </div>
+
+      <div class="studio-tools">
+        <label>Instrument hinzufügen <select id="stuAddSel"></select></label>
+        <button id="stuAdd" class="ghost">➕ Hinzufügen</button>
+        <label>Latenz-Ausgleich Aufnahme <input id="stuLatency" type="range" min="0" max="250" step="1"> <span id="stuLatVal">80 ms</span></label>
+        <label>Mixdown
+          <select id="stuLoops"><option value="1">1 Durchlauf</option><option value="2" selected>2 Durchläufe</option><option value="4">4 Durchläufe</option></select>
+        </label>
+        <button id="stuExport" class="ghost">💾 Als WAV speichern</button>
+      </div>
+
+      <div id="mixer" class="mixer"></div>
+      <p class="hint">
+        <b>So geht's:</b> Instrumente hinzufügen, Spielweise wählen, mit den Fadern mischen. Mit <i>● Aufnehmen</i> zählt das Studio einen Takt ein
+        und nimmt dann deine Gitarre (mit deinem Verstärker-Sound) über einen Durchlauf der Akkordfolge auf – danach kannst du zu deinem Take weiterspielen oder weitere Takes übereinander legen.
+        Läuft ein Take neben dem Beat, korrigiere den <i>Versatz</i> am Kanal. Nimm am besten mit Kopfhörern auf.
+      </p>
+    </section>
   </main>
 </div>
 
 <script src="js/pitch.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/lessons.js"></script>
+<script src="js/studio-synth.js"></script>
+<script src="js/studio.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

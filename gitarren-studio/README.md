@@ -13,6 +13,7 @@ keine Konten, keine Kosten.
   ob du die richtige Note zur richtigen Zeit spielst (Sterne, Trefferquote, Serie).
   Tempo-Regler, Wartemodus, Metronom, Wiederholen.
 * **Eigene Tabs**: Füge eine ASCII-Tabulatur ein – sie wird wie eine Lektion abgespielt.
+* **Studio**: Eine Backing-Band zum Mitspielen und Mixen (siehe unten).
 
 ## Starten
 
@@ -23,6 +24,23 @@ keine Konten, keine Kosten.
 4. **Kopfhörer aufsetzen** – mit Lautsprechern gibt es Rückkopplung.
 
 Alternativ per kleinem Server: `python3 -m http.server 8000` im Ordner und `http://localhost:8000` öffnen.
+
+## Studio
+
+Im Tab **Studio** baust du dir eine Band und mischst sie zusammen mit deiner Gitarre.
+
+* **Akkordfolge** wählen (12-Takt-Blues, Rock I–IV–V, Power-Rock, Ballade …) oder selbst tippen:
+  `Am G*2 F/C D5 Em7` (ein Akkord = ein Takt, `*4` = vier Takte, `/C` = Basston).
+* **Instrumente hinzufügen** (alle werden im Browser erzeugt): Schlagzeug, E-Bass, E-Piano, Orgel, Streicher-Pad,
+  Synth-Arpeggio, Percussion. Jedes hat mehrere Spielweisen (z. B. Rock, Shuffle, Walking Bass, Boogie, Offbeat …)
+  und kann mehrfach hinzugefügt werden.
+* **Mixer**: pro Kanal Fader, Pan, Hall-Send, Mute und Solo, dazu Pegelanzeige und Master.
+  Deine Live-Gitarre hat einen eigenen Kanal (ihr Sound kommt aus dem Verstärker-Tab).
+* **Aufnehmen**: Das Studio zählt einen Takt ein und nimmt deine Gitarre einen Durchlauf lang auf.
+  Der Take läuft ab der nächsten Runde im Loop mit; du kannst weitere Takes übereinander legen.
+  Läuft ein Take neben dem Beat, stelle am Kanal den **Versatz** nach (Latenz-Ausgleich).
+  Das Tempo ist gesperrt, solange Takes existieren.
+* **Mixdown**: „Als WAV speichern“ rendert Band und Takes (ohne Live-Gitarre) zu einer Datei.
 
 ## Tipps
 
