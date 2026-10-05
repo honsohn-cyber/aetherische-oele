@@ -42,8 +42,8 @@ function parseChords(text) {
 
 function expandBars(chords) {
   const bars = [];
-  chords.forEach((c) => { for (let i = 0; i < c.bars; i++) bars.push(c); });
-  return bars.slice(0, 32);
+  chords.forEach((c) => { for (let i = 0; i < c.bars; i++) bars.push({ ...c, cont: i > 0 }); });
+  return bars.slice(0, 96);
 }
 
 const CHORD_PRESETS = [

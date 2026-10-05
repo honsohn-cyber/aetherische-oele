@@ -14,6 +14,7 @@ keine Konten, keine Kosten.
   Tempo-Regler, Wartemodus, Metronom, Wiederholen.
 * **Eigene Tabs**: Füge eine ASCII-Tabulatur ein – sie wird wie eine Lektion abgespielt.
 * **Studio**: Eine Backing-Band zum Mitspielen und Mixen (siehe unten).
+* **80er Songs**: 15 Jam-Tracks mit Strophe, Refrain, Solo und Outro – mit Regler für Geschwindigkeit und Lautstärke jedes Instruments.
 
 ## Starten
 
@@ -41,6 +42,23 @@ Im Tab **Studio** baust du dir eine Band und mischst sie zusammen mit deiner Git
   Läuft ein Take neben dem Beat, stelle am Kanal den **Versatz** nach (Latenz-Ausgleich).
   Das Tempo ist gesperrt, solange Takes existieren.
 * **Mixdown**: „Als WAV speichern“ rendert Band und Takes (ohne Live-Gitarre) zu einer Datei.
+
+## 80er Songs
+
+Im Tab **80er Songs** liegen 15 Jam-Tracks (Arena-Rock, Power-Ballade, Party-Hard-Rock, Folk-Rock, Synth-Rock, Boogie,
+Heavy Rock, Speed-Rock, Doom, Heavy Blues, Orgel-Hardrock, Space-Rock, Deutschrock …). Ein Klick auf **„Laden & spielen“**
+öffnet den Song im Studio:
+
+* **Geschwindigkeit**: Regler 50–130 % (die BPM stehen daneben).
+* **Lautstärke pro Instrument**: Fader im Mixer, dazu M (stumm) und S (solo). Beispiel: Schlagzeug leise = du übernimmst den Beat.
+* Jeder Song hat Abschnitte (Intro, Strophe, Refrain, Solo, Outro), in denen die Instrumente anders spielen oder pausieren.
+* **Mein Geschmack**: Die Bandliste (Led Zeppelin, Pink Floyd, Van Halen, Motörhead, Uriah Heep, Foreigner, Nazareth, Guns N' Roses,
+  Black Sabbath, Genesis, Rory Gallagher, Neil Young, Fleetwood Mac, Westernhagen) bestimmt die Reihenfolge der Karten.
+  Du kannst sie ändern. Die Bandnamen verlinken auf YouTube Music.
+
+Wichtig: Das sind **frei komponierte Begleitungen „im Stil von“**, keine Originalaufnahmen und keine Nachbauten bestimmter Songs
+(Riffs und Melodien sind urheberrechtlich geschützt, und aus YouTube-Aufnahmen lassen sich keine einzelnen Instrumente herausregeln).
+Das Programm hat keinen Zugriff auf dein YouTube-Music-Konto.
 
 ## Tipps
 

@@ -846,6 +846,7 @@ $('#impAdd').addEventListener('click', () => {
   syncControls();
   Tuner.init();
   Studio.init();
+  SongsUI.init();
   Game.init();
   buildLessons();
   selectLesson(LESSONS[0].id);

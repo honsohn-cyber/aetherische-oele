@@ -4,14 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gitarren-Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app">
   <header class="top">
     <div class="brand">
-      <span class="logo" aria-hidden="true">🎸</span>
-      <div><h1>Gitarren-Studio</h1><p>Kabel einstecken, Kopfhörer auf, los.</p></div>
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd23d"/><stop offset="1" stop-color="#e5171f"/></linearGradient></defs>
+        <path d="M38 2 12 36h15l-5 26 30-38H36z" fill="url(#lg)" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <div><h1>Gitarren<span>·</span>Studio</h1><p>Kabel rein. Lauter drehen. Rocken.</p></div>
     </div>
     <div class="io">
       <button id="btnStart" class="primary">▶ Audio starten</button>
@@ -27,6 +33,7 @@
     <button class="tab" data-tab="tuner" role="tab">🎯 Stimmgerät</button>
     <button class="tab" data-tab="lessons" role="tab">🎶 Lektionen</button>
     <button class="tab" data-tab="studio" role="tab">🎛️ Studio</button>
+    <button class="tab" data-tab="songs" role="tab">🎤 80er Songs</button>
   </nav>
 
   <main>
@@ -111,7 +118,7 @@
             <div class="hud-item"><span class="k">Gespielt</span><span id="hudNote" class="v">–</span></div>
             <div class="hud-item"><span class="k">Treffer</span><span id="hudScore" class="v">0 %</span></div>
             <div class="hud-item"><span class="k">Serie</span><span id="hudStreak" class="v">0</span></div>
-            <div class="hud-item prog"><div id="hudProg"></div></div>
+            <div class="hud-item hud-prog"><div id="hudProg"></div></div>
           </div>
 
           <div class="canvas-wrap">
@@ -136,11 +143,16 @@
     <!-- STUDIO -->
     <section id="tab-studio" class="panel" hidden>
       <div class="studio-bar">
+        <div id="stuSong" class="song-banner" hidden>
+          <span class="mic">🎤</span><b id="stuSongName"></b>
+          <button id="stuSongOff" class="ghost small">Song beenden</button>
+        </div>
         <div class="transport">
           <button id="stuPlay" class="primary">▶ Play</button>
           <button id="stuStop" class="ghost" disabled>■ Stopp</button>
           <button id="stuRec" class="rec" title="Deine Gitarre zur Band aufnehmen (ein Durchlauf der Akkordfolge)">● Aufnehmen</button>
           <label>Tempo <input id="stuBpm" type="number" min="50" max="220" value="100"> BPM</label>
+          <label>Geschwindigkeit <input id="stuSpeed" type="range" min="50" max="130" step="1" value="100"> <span id="stuSpeedVal">100 %</span></label>
           <label class="check"><input type="checkbox" id="stuMetro"> Metronom</label>
           <span id="stuPos" class="pos">Gestoppt</span>
         </div>
@@ -170,6 +182,24 @@
         Läuft ein Take neben dem Beat, korrigiere den <i>Versatz</i> am Kanal. Nimm am besten mit Kopfhörern auf.
       </p>
     </section>
+
+    <!-- 80ER SONGS -->
+    <section id="tab-songs" class="panel" hidden>
+      <div class="songs-head">
+        <h2>80er Rock – Jam-Tracks</h2>
+        <p class="hint">Wähle einen Song: Die Band spielt Intro, Strophe, Refrain, Solo und Outro – du spielst mit. Im Studio regelst du danach die <b>Geschwindigkeit</b> (50–130 %)
+          und die <b>Lautstärke jedes einzelnen Instruments</b> (Fader), kannst Instrumente stummschalten (M) oder solo hören (S). Tipp: Stell Schlagzeug leiser, um den Beat selbst zu übernehmen.</p>
+        <details class="taste">
+          <summary>🎧 Mein Geschmack</summary>
+          <p class="hint small">Diese Bands habe ich aus deiner Nachricht und deiner „For you“-Seite übernommen. Songs mit passenden Vorbildern stehen oben. Ändere die Liste (mit Komma getrennt) – sie wird im Browser gespeichert.</p>
+          <div class="row"><input id="tasteInput" type="text" spellcheck="false" aria-label="Lieblingsbands"> <button id="tasteSave" class="ghost small">Speichern</button></div>
+          <div id="tasteBands" class="bands"></div>
+        </details>
+        <div id="songFilter" class="song-filter"></div>
+      </div>
+      <div id="songGrid" class="song-grid"></div>
+      <p class="hint small">Die Tracks sind frei komponierte Begleitungen im Stil der 80er (keine Originalaufnahmen und keine Nachbauten bestimmter Songs). Die Bandnamen öffnen YouTube Music, damit du dir die Originale anhören kannst. Ich habe keinen Zugriff auf dein YouTube-Music-Konto – deine Bandliste hast du mir selbst genannt.</p>
+    </section>
   </main>
 </div>
 
@@ -177,7 +207,9 @@
 <script src="js/audio.js"></script>
 <script src="js/lessons.js"></script>
 <script src="js/studio-synth.js"></script>
+<script src="js/songs.js"></script>
 <script src="js/studio.js"></script>
+<script src="js/songs-ui.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

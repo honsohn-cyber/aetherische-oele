@@ -41,6 +41,7 @@ const Studio = {
   masterVol: 75,
   bpm: 100,
   presetId: 'blues',
+  song: null, baseBpm: 100, speedPct: 100,
   chordsText: 'E7*4 A7*2 E7*2 B7 A7 E7*2',
   metro: false,
   latencyMs: 80,
@@ -59,6 +60,9 @@ const Studio = {
     const s = store.get('studio', null);
     if (s) {
       this.bpm = s.bpm || this.bpm;
+      this.baseBpm = s.baseBpm || this.bpm;
+      this.speedPct = s.speedPct || 100;
+      this.song = (typeof SONGS !== 'undefined' && SONGS.find((x) => x.id === s.songId)) || null;
       this.presetId = s.presetId || this.presetId;
       this.chordsText = s.chordsText || this.chordsText;
       this.metro = !!s.metro;
@@ -79,14 +83,24 @@ const Studio = {
 
   save() {
     store.set('studio', {
-      bpm: this.bpm, presetId: this.presetId, chordsText: this.chordsText, metro: this.metro,
+      bpm: this.bpm, baseBpm: this.baseBpm, speedPct: this.speedPct, songId: this.song ? this.song.id : null, presetId: this.presetId, chordsText: this.chordsText, metro: this.metro,
       masterVol: this.masterVol, guitar: this.guitar, latencyMs: this.latencyMs,
-      tracks: this.tracks.filter((t) => t.kind !== 'take').map(({ kind, style, vol, pan, mute, solo, send, fill }) =>
-        ({ kind, style, vol, pan, mute, solo, send, fill })),
+      tracks: this.tracks.filter((t) => t.kind !== 'take').map(({ kind, style, vol, pan, mute, solo, send, fill, sec }) =>
+        ({ kind, style, vol, pan, mute, solo, send, fill, sec })),
     });
   },
 
   parse() {
+    if (this.song) {
+      const sb = songBars(this.song);
+      this.bad = [];
+      this.chords = [];
+      this.bars = sb.bars;
+      this.loopBeats = this.bars.length * 4;
+      this.chordsText = sb.text;
+      this.tracks.forEach((t) => this.rebuildEvents(t));
+      return;
+    }
     const { chords, bad } = parseChords(this.chordsText);
     this.bad = bad;
     if (chords.length) {
@@ -101,7 +115,50 @@ const Studio = {
   },
 
   rebuildEvents(t) {
-    t.events = t.kind === 'take' ? [{ t: 0 }] : INST[t.kind].gen(this.bars, t.style, { fill: t.fill });
+    if (t.kind === 'take') { t.events = [{ t: 0 }]; return; }
+    const spec = INST[t.kind];
+    if (!this.song) { t.events = spec.gen(this.bars, t.style, { fill: t.fill }); return; }
+    // Song: Abschnitt für Abschnitt, jedes Instrument kann pro Abschnitt eine andere Spielweise haben oder pausieren
+    const ev = [];
+    let i = 0;
+    while (i < this.bars.length) {
+      const idx = this.bars[i].secIdx, name = this.bars[i].sec;
+      let j = i;
+      while (j < this.bars.length && this.bars[j].secIdx === idx) j++;
+      const style = t.sec && name in t.sec ? t.sec[name] : t.style;
+      if (style && spec.styles[style]) {
+        spec.gen(this.bars.slice(i, j), style, { fill: t.fill }).forEach((e) => ev.push({ ...e, t: e.t + i * 4 }));
+      }
+      i = j;
+    }
+    t.events = ev;
+  },
+
+  /** Song laden: Band, Akkorde, Tempo. Rückgabe false, wenn abgebrochen. */
+  loadSong(id) {
+    const song = SONGS.find((x) => x.id === id);
+    if (!song) return false;
+    if (this.takes.length && !confirm('Deine aufgenommenen Gitarren-Takes werden entfernt. Song trotzdem laden?')) return false;
+    this.stop();
+    this.tracks.forEach((t) => { if (t.strip) t.strip.dispose(); });
+    this.tracks = [];
+    this.song = song;
+    this.presetId = 'custom';
+    this.bpm = this.baseBpm = song.bpm;
+    this.speedPct = 100;
+    this.parse();
+    song.band.forEach((b) => this.addTrack(b.kind, { style: b.style, vol: b.vol, pan: b.pan, send: b.send, sec: b.sec }, true));
+    this.save();
+    this.renderMixer();
+    this.syncToolbar();
+    this.msg(`Song geladen: ${song.title}. ${song.tip}`);
+    return true;
+  },
+
+  leaveSong() {
+    if (!this.song) return;
+    this.song = null;
+    this.parse();
   },
 
   get takes() { return this.tracks.filter((t) => t.kind === 'take'); },
@@ -210,8 +267,9 @@ const Studio = {
     return this.refBeat + (engine.ctx.currentTime - this.refTime) / (60 / this.bpm);
   },
 
-  setBpm(v) {
-    v = Math.max(50, Math.min(220, Math.round(v) || this.bpm));
+  setBpm(v, fromUser = true) {
+    v = Math.max(40, Math.min(240, Math.round(v) || this.bpm));
+    if (fromUser) { this.baseBpm = v; this.speedPct = 100; }
     if (this.playing) {
       const cur = this.currentBeat();
       this.refTime = engine.ctx.currentTime;
@@ -369,15 +427,21 @@ const Studio = {
     $('#stuStop').addEventListener('click', () => this.stop());
     $('#stuRec').addEventListener('click', () => this.toggleRec());
     $('#stuBpm').addEventListener('change', (e) => this.setBpm(parseFloat(e.target.value)));
+    $('#stuSpeed').addEventListener('input', (e) => {
+      this.speedPct = +e.target.value;
+      this.setBpm(this.baseBpm * this.speedPct / 100, false);
+    });
+    $('#stuSongOff').addEventListener('click', () => { this.leaveSong(); this.afterChordsChange(); });
     $('#stuMetro').addEventListener('change', (e) => { this.metro = e.target.checked; this.save(); });
     $('#stuAdd').addEventListener('click', () => this.addTrack($('#stuAddSel').value));
     $('#stuExport').addEventListener('click', () => this.exportMix());
     ps.addEventListener('change', () => {
       const p = CHORD_PRESETS.find((x) => x.id === ps.value);
       this.presetId = p.id;
+      this.leaveSong();
       if (p.text) {
         this.chordsText = p.text;
-        if (p.bpm && !this.takes.length && this.rec.state === 'idle') this.bpm = p.bpm;
+        if (p.bpm && !this.takes.length && this.rec.state === 'idle') { this.bpm = this.baseBpm = p.bpm; this.speedPct = 100; }
       } else {
         $('#stuChords').focus();
       }
@@ -385,6 +449,7 @@ const Studio = {
     });
     let t = null;
     $('#stuChords').addEventListener('input', (e) => {
+      this.leaveSong();
       this.chordsText = e.target.value;
       this.presetId = 'custom';
       ps.value = 'custom';
@@ -416,6 +481,11 @@ const Studio = {
     if (!keepInput) $('#stuChords').value = this.chordsText;
     $('#stuPreset').value = this.presetId;
     $('#stuBpm').value = this.bpm;
+    $('#stuSpeed').value = this.speedPct;
+    $('#stuSpeedVal').textContent = `${this.speedPct} %`;
+    const banner = $('#stuSong');
+    banner.hidden = !this.song;
+    if (this.song) $('#stuSongName').textContent = `${this.song.title} · ${this.song.style} · ${this.song.key}`;
     $('#stuMetro').checked = this.metro;
     $('#stuLatency').value = this.latencyMs;
     $('#stuLatVal').textContent = this.latencyMs + ' ms';
@@ -423,6 +493,7 @@ const Studio = {
     $('#stuStop').disabled = !this.playing;
     const locked = this.takes.length > 0 || this.rec.state !== 'idle';
     $('#stuBpm').disabled = locked;
+    $('#stuSpeed').disabled = locked;
     $('#stuBpm').title = locked ? 'Tempo ist gesperrt, solange Gitarren-Takes existieren (sie sind in diesem Tempo aufgenommen).' : '';
     if (this.bad.length) this.msg('Nicht erkannt: ' + this.bad.join(' ') + ' (Beispiele: E7, Am, G/B, D5, A*2)');
     else if (/^(Nicht erkannt)/.test($('#stuMsg').textContent)) this.msg('');
@@ -432,15 +503,19 @@ const Studio = {
   renderChips() {
     const wrap = $('#stuChips');
     wrap.innerHTML = '';
-    let prev = null;
     this.bars.forEach((c, i) => {
+      if (c.secStart) {
+        const l = document.createElement('span');
+        l.className = 'sec-label';
+        l.textContent = c.sec;
+        wrap.appendChild(l);
+      }
       const d = document.createElement('div');
-      d.className = 'chip' + (c === prev ? ' cont' : '');
+      d.className = 'chip' + (c.cont ? ' cont' : '');
       d.dataset.i = i;
-      d.textContent = c === prev ? '·' : c.name;
-      d.title = `Takt ${i + 1}`;
+      d.textContent = c.cont ? '·' : c.name;
+      d.title = `Takt ${i + 1}${c.sec ? ' · ' + c.sec : ''}`;
       wrap.appendChild(d);
-      prev = c;
     });
   },
 
@@ -541,7 +616,7 @@ const Studio = {
           const bar = Math.floor(b / 4) % Math.max(1, this.bars.length);
           active = bar;
           const c = this.bars[bar];
-          pos.textContent = `Takt ${bar + 1}/${this.bars.length} · Schlag ${Math.floor(b % 4) + 1}${c ? ' · ' + c.name : ''}`;
+          pos.textContent = `${c && c.sec ? c.sec + ' · ' : ''}Takt ${bar + 1}/${this.bars.length} · Schlag ${Math.floor(b % 4) + 1}${c ? ' · ' + c.name : ''}`;
         }
       } else pos.textContent = 'Gestoppt';
       chips.forEach((c, i) => c.classList.toggle('now', i === active));
